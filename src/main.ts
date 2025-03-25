@@ -10,7 +10,7 @@ type ServerDetails = {
   isNuked: boolean
 }
 
-enum file {
+enum File {
   serverMap = 'server-map.json',
   serverParent = 'server-parent.json'
 }
@@ -38,14 +38,15 @@ export async function main(ns: NS): Promise<void> {
     serverParent[server] = "home"
     await updateMap(ns, server)
   }
-  ns.write(file.serverMap, JSON.stringify(serverMap), 'w')
-  ns.write(file.serverParent, JSON.stringify(serverParent), 'w')
+  ns.write(File.serverMap, JSON.stringify(serverMap), 'w')
+  ns.write(File.serverParent, JSON.stringify(serverParent), 'w')
   ns.tprint("Scanned: ", Object.keys(serverMap))
 
   G.target = Object.entries(serverMap).reduce(
     (acc, [k, v]) => v.isNuked && acc.maxMoney < v.maxMoney ? { name: k, maxMoney: v.maxMoney } : acc, 
     G.target
   )
+  ns.ui.openTail()
 
   // Store initiliazing values
   const values = { nuke: {}, buy: {}, hack: {} }

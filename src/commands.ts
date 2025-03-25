@@ -1,6 +1,6 @@
 import { NS } from "@ns";
 
-enum file {
+enum File {
   serverMap = 'server-map.json',
   serverParent = 'server-parent.json'
 }
@@ -9,6 +9,7 @@ enum commands {
   con = 'con',
   det = 'det',
   nuked = 'nuked',
+  free = 'free',
 }
 
 
@@ -19,7 +20,7 @@ export async function main(ns: NS): Promise<void> {
 
   if (command === commands.con) {
     ns.tprint('Trying to connect to ', target)
-    const serverParent = JSON.parse(ns.read(file.serverParent))
+    const serverParent = JSON.parse(ns.read(File.serverParent))
     if (!serverParent[target]) {
       ns.tprint(`${target} is not a valid server`)
       ns.exit()
@@ -33,7 +34,7 @@ export async function main(ns: NS): Promise<void> {
     ns.tprint('ConnectString: ', connectString)
 
   } else if (command === commands.det) {
-    const serverMap = JSON.parse(ns.read(file.serverMap))
+    const serverMap = JSON.parse(ns.read(File.serverMap))
     if (!serverMap[target]) {
       ns.tprint(`${target} is not a valid server`)
       ns.exit()
@@ -43,8 +44,16 @@ export async function main(ns: NS): Promise<void> {
     ns.tprint(ns.getServer(target))
 
   } else if (command === commands.nuked) {
-    const serverMap = JSON.parse(ns.read(file.serverMap))
+    const serverMap = JSON.parse(ns.read(File.serverMap))
     ns.tprint(Object.keys(serverMap).filter(k => serverMap[k].isNuked))
+
+  } else if (command === commands.free) {
+    const serverMap = JSON.parse(ns.read(File.serverMap))
+    for (const server of Object.keys(serverMap)) {
+      if (server === "home") { continue }
+      ns.tprint("Free ", server)
+      ns.killall(server)
+    }
   }
 }
 
